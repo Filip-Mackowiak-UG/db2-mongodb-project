@@ -95,5 +95,5 @@ module.exports = {
   setProduct,
   updateProduct,
   deleteProduct,
-  getProductsRaport: getProductsReport,
+  getProductsReport: getProductsReport,
 };

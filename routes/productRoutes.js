@@ -5,13 +5,13 @@ const {
   setProduct,
   updateProduct,
   deleteProduct,
-  getProductsRaport
+  getProductsReport
 } = require("../controllers/productController");
 
 router.route("/").get(getProducts).post(setProduct);
 
 router.route("/:id").put(updateProduct).delete(deleteProduct);
 
-router.route("/raport").get(getProductsRaport)
+router.route("/report").get(getProductsReport)
 
 module.exports = router;
