@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/products", require("./routes/productRoutes"));
-app.use("/", require("./routes/siteRoutes"))
+app.use("/", require("./routes/siteRoutes"));
 
 app.use(errorHandler);
 
