@@ -22,8 +22,8 @@ const getProducts = asyncHandler(async (req, res) => {
   res.status(200).json(products);
 });
 
-// @desc    Get products raport
-// @route   GET /products/raport
+// @desc    Get products report
+// @route   GET /products/report
 const getProductsReport = asyncHandler(async (req, res) => {
   const products = await Product.aggregate([
     {
