@@ -5,8 +5,41 @@ const Product = require("../models/productModel");
 // @desc    Get products
 // @route   GET /products
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
+  const findByObj = {};
+
+  Object.keys(req.query).forEach((key) => {
+    if (key !== "sortBy") {
+      if (req.query[key]) findByObj[key] = req.query[key];
+    }
+  });
+
+  const sortByObj = req.query["sortBy"];
+
+  const products = await Product.find(findByObj).sort(
+    Array.isArray(sortByObj) ? sortByObj.join(" ") : sortByObj
+  );
+
   res.status(200).json(products);
+});
+
+// @desc    Get products raport
+// @route   GET /products/raport
+const getProductsReport = asyncHandler(async (req, res) => {
+  const products = await Product.aggregate([
+    {
+      $project: {
+        _id: 0,
+        name: 1,
+        quantity: 1,
+        price: 1,
+        totalSingleProductPrice: { $multiply: ["$price", "$quantity"] },
+      },
+    },
+  ]);
+
+  const totalPrice = Math.round(products.reduce((acc, {totalSingleProductPrice}) => acc + totalSingleProductPrice, 0) * 100) / 100;
+
+  res.status(200).json({report: products, totalPrice: totalPrice});
 });
 
 // @desc    Set product
@@ -34,7 +67,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
-  const updatedProduct = await Product.findByIdAndUpdate(providedId, req.body, {new: true});
+  const updatedProduct = await Product.findByIdAndUpdate(providedId, req.body, {
+    new: true,
+  });
 
   res.status(200).json(updatedProduct);
 });
@@ -50,9 +85,9 @@ const deleteProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 
-  await Product.deleteOne();
+  await Product.deleteOne({ _id: providedId });
 
-  res.status(200).json({id: providedId});
+  res.status(200).json({ id: providedId });
 });
 
 module.exports = {
@@ -60,4 +95,5 @@ module.exports = {
   setProduct,
   updateProduct,
   deleteProduct,
+  getProductsRaport: getProductsReport,
 };
